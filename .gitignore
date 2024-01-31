@@ -1,4 +1,5 @@
 **/pqe_env/
 pqe_fe/node_modules/
 pqe/.env
-*.csv
+pqe/static/*.csv
+!pqe/static/.gitkeep
