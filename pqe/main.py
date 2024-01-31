@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import pandas as pd 
@@ -15,22 +16,39 @@ app = FastAPI()
 app.mount('/static',StaticFiles(directory='static'),name='static')
 load_dotenv('.env')
 
-try : 
-    csv_path = glob.glob('static/*.csv')[0]
-    df = pd.read_csv(csv_path)
-    df = normalize_column_name(df)
-except: 
-    print("error occured during reading csv_path")
+def read_csv_files():
+    try : 
+        csv_path = glob.glob('static/*.csv')[0]
+        df = pd.read_csv(csv_path)
+        df = normalize_column_name(df)
+    except: 
+        print("there is no file in the static folder")
+
+read_csv_files()
 
 class Message(BaseModel): 
     msg:str
 
+# Add middleware 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000/"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 # Enpoints 
 
-@app.get('/api')
-async def home(): 
-    return JSONResponse(df.to_json())
+@app.post('/api/upload')
+async def uploadFile(file:UploadFile): 
+    save_path = f"static/{file.filename}"
+    with open(save_path, "wb") as buffer:
+        buffer.write(file.file.read())
+    read_csv_files()
+    return JSONResponse({'filename':f'{file.filename}'})
 
 @app.post('/api/delete')
 async def deleteCsv(): 
