@@ -16,11 +16,13 @@ app = FastAPI()
 app.mount('/static',StaticFiles(directory='static'),name='static')
 load_dotenv('.env')
 
+df = None
+
 def read_csv_files():
     try : 
         csv_path = glob.glob('static/*.csv')[0]
-        df = pd.read_csv(csv_path)
-        df = normalize_column_name(df)
+        globals()["df"] = pd.read_csv(csv_path)
+        globals()["df"] = normalize_column_name(globals()["df"])
     except: 
         print("there is no file in the static folder")
 
@@ -32,7 +34,7 @@ class Message(BaseModel):
 # Add middleware 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000/"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
