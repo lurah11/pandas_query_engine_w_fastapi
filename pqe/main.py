@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 import pandas as pd 
 import matplotlib.pyplot as plt
 import glob 
-from utility import delete_csv, get_query_engine, normalize_column_name, get_matplotlib_figure
+from utility import delete_csv, get_query_engine, normalize_column_name, get_matplotlib_figure, check_csv_file_exist
 from  pydantic import BaseModel
 from dotenv import load_dotenv
 from io import BytesIO
@@ -77,4 +77,12 @@ async def query_data(message:Message):
         resp_obj["img"] = img_data   
         resp_obj["result"] = "Your query result contains plot as follow"
     return JSONResponse(resp_obj)
+
+@app.get('/api/checkupload')
+async def get_upload_status(): 
+    csv_file_name = check_csv_file_exist()
+    if csv_file_name: 
+        return JSONResponse({'filename':csv_file_name}) 
+    return JSONResponse({'filename':'none'})
+
     

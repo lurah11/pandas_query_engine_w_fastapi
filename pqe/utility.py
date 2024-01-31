@@ -17,6 +17,11 @@ def delete_csv():
     for f in files : 
         os.remove(f)
 
+def check_csv_file_exist(): 
+    if len(files)!=0: 
+        return os.path.basename(files[0])
+    return None
+
 def normalize_column_name(df): 
     for f in df.columns: 
         new_name = f.lower()

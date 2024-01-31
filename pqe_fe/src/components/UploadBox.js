@@ -3,13 +3,24 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid  from '@mui/material/Grid';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 
 
 export default function UploadBox({filename}) {
-
     const [selectedFile, setSelectedFile] = useState("");
     const [uploadedFile,SetUploadedFile] = useState("");
+
+    useEffect(()=>{
+        fetch("http://127.0.0.1:8000/api/checkupload",{
+            method:'GET'
+        }).then(response=>response.json())
+        .then(data=>{
+            console.log(data)
+            SetUploadedFile(data["filename"])
+        })
+    },[])
+
+
 
     function handleChange(event){
         const file = event.target.files[0]
@@ -20,7 +31,7 @@ export default function UploadBox({filename}) {
             alert("select File First!")
         }
         else {
-            if(uploadedFile==="") {
+            if(uploadedFile==="none") {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 console.log(formData)
