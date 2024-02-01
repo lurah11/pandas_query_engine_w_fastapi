@@ -62,21 +62,25 @@ async def deleteCsv():
 
 @app.post('/api')
 async def query_data(message:Message):
-    resp_obj = {}
-    df = globals()["df"]
-    query_engine = get_query_engine(df,verbose=True)
-    response = query_engine.query(message.msg)
-    resp_obj["result"] = response.response
-    pandas_code = response.metadata["pandas_instruction_str"]
-    resp_obj["pandas_code"] = pandas_code
-    if "plot(" in pandas_code:
-        fig = get_matplotlib_figure(df,pandas_code)
-        buf = BytesIO()
-        fig.savefig(buf,format="png")
-        img_data = base64.b64encode(buf.getbuffer()).decode('ascii')
-        resp_obj["img"] = img_data   
-        resp_obj["result"] = "Your query result contains plot as follow"
-    return JSONResponse(resp_obj)
+    try: 
+        resp_obj = {}
+        df = globals()["df"]
+        query_engine = get_query_engine(df,verbose=True)
+        response = query_engine.query(message.msg)
+        resp_obj["result"] = response.response
+        pandas_code = response.metadata["pandas_instruction_str"]
+        resp_obj["pandas_code"] = pandas_code
+        if "plot(" in pandas_code:
+            fig = get_matplotlib_figure(df,pandas_code)
+            buf = BytesIO()
+            fig.savefig(buf,format="png")
+            img_data = base64.b64encode(buf.getbuffer()).decode('ascii')
+            resp_obj["img"] = img_data   
+            resp_obj["result"] = "Your query result contains plot as follow"
+        return JSONResponse(resp_obj)
+    except Exception as e : 
+        return JSONResponse({'exception':str(e)})
+
 
 @app.get('/api/checkupload')
 async def get_upload_status(): 

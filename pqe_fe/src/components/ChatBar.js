@@ -1,10 +1,12 @@
 import TextField from '@mui/material/TextField';
+import {useState} from 'react'
 
+export default function ChatBar({keydown}){
+    const [query,setQuery] = useState("")
 
-export default function ChatBar(){
     return (
         <>
-        <TextField sx={{width:"100%"}} label="Ask your dataframe here" variant="outlined" ></TextField>
+        <TextField onKeyDown={keydown} sx={{width:"100%"}} label="Ask your dataframe here" variant="outlined" ></TextField>
         </>
     )
 }
