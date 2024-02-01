@@ -48,13 +48,24 @@ export default function UploadBox({filename}) {
                 })
             }
             else {
-
+                alert("Delete existing csv file from server first pls")
             }
         }
     }
 
     function handleDelete() {
-
+        if (uploadedFile==="none"){
+            alert("There is nothing to delete")
+        }
+        else {
+            fetch('http://127.0.0.1:8000/api/delete',{
+                method:'POST'
+            }).then(response=>response.json())
+            .then(data=>{
+                SetUploadedFile("none")
+                alert(data["status"])
+            })
+        }
     }
     
     
